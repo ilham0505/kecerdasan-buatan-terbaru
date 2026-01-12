@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Adaptive Math Learning{% endblock %}
+
+{% block content %}
+<div class="header">
+    <h1>🎓 Dashboard Pembelajaran</h1>
+    <p>Halo, {{ student_name }}! Siap belajar hari ini?</p>
+</div>
+
+<!-- Card utama dengan gradasi biru Copilot -->
+<div class="card" style="background: linear-gradient(135deg, #0078D4 0%, #00BCF2 100%); color: white; border: none;">
+    <h2>📚 Pilih Topik untuk Dipelajari</h2>
+    <p>Klik pada topik untuk mulai belajar. Sistem akan menyesuaikan dengan level pemahamanmu!</p>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; margin-top: 30px;">
+    {% for topic in topics %}
+    <div class="card" style="border: 3px solid #e9ecef; transition: all 0.3s;">
+        <h3 style="color: #0078D4; margin-bottom: 10px;">
+            {{ topic['name'] }}
+            {% if topic['difficulty'] == 1 %}
+                <span style="background: #28a745; color: white; padding: 4px 8px; border-radius: 5px; font-size: 0.7em;">⭐ Mudah</span>
+            {% elif topic['difficulty'] == 2 %}
+                <span style="background: #ffc107; color: white; padding: 4px 8px; border-radius: 5px; font-size: 0.7em;">⭐⭐ Menengah</span>
+            {% elif topic['difficulty'] == 3 %}
+                <span style="background: #fd7e14; color: white; padding: 4px 8px; border-radius: 5px; font-size: 0.7em;">⭐⭐⭐ Sedang</span>
+            {% else %}
+                <span style="background: #dc3545; color: white; padding: 4px 8px; border-radius: 5px; font-size: 0.7em;">⭐⭐⭐⭐ Sulit</span>
+            {% endif %}
+        </h3>
+        <p style="color: #666; margin-bottom: 15px;">{{ topic['description'] }}</p>
+        
+        <div style="margin: 15px 0;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                <span style="font-weight: 600;">Level Penguasaan:</span>
+                <span style="font-weight: 600; color: #0078D4;">{{ (topic['knowledge_level'] * 100) | round | int }}%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: {{ (topic['knowledge_level'] * 100) }}%; background: #00BCF2;">
+                    {% if topic['knowledge_level'] > 0 %}
+                        {{ (topic['knowledge_level'] * 100) | round | int }}%
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin: 15px 0; color: #666;">
+            <div style="display: flex; justify-content: space-between;">
+                <span>📝 Percobaan:</span>
+                <span style="font-weight: 600;">{{ topic['attempts'] }}</span>
+            </div>
+            {% if topic['knowledge_level'] > 0 %}
+            <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                <span>🎯 Status:</span>
+                <span style="font-weight: 600; color: 
+                    {% if topic['knowledge_level'] >= 0.8 %}#28a745
+                    {% elif topic['knowledge_level'] >= 0.6 %}#ffc107
+                    {% elif topic['knowledge_level'] >= 0.4 %}#fd7e14
+                    {% else %}#dc3545{% endif %}">
+                    {% if topic['knowledge_level'] >= 0.8 %}
+                        Mahir 🏆
+                    {% elif topic['knowledge_level'] >= 0.6 %}
+                        Baik 👍
+                    {% elif topic['knowledge_level'] >= 0.4 %}
+                        Berkembang 📈
+                    {% else %}
+                        Pemula 🌱
+                    {% endif %}
+                </span>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <a href="{{ url_for('learn', topic_id=topic['id']) }}" class="btn" style="flex: 1; text-align: center; background: #0078D4; color: white;">
+                📖 Belajar
+            </a>
+            <a href="{{ url_for('practice', topic_id=topic['id']) }}" class="btn" style="flex: 1; text-align: center; background: #00BCF2; color: white;">
+                ✏️ Latihan
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="card" style="margin-top: 30px; background: #f8f9fa;">
+    <h3 style="color: #0078D4; margin-bottom: 15px;">💡 Tips Hari Ini</h3>
+    <p style="line-height: 1.8;">
+        Belajar matematika itu seperti main game - semakin sering latihan, semakin jago! 🎮
+        Jangan takut salah, karena dari kesalahan kita bisa belajar lebih banyak. Sistem kami akan 
+        membantu kamu dengan menyesuaikan tingkat kesulitan agar kamu tetap tertantang tapi tidak frustasi. 
+        Selamat belajar! 🚀
+    </p>
+</div>
+{% endblock %}

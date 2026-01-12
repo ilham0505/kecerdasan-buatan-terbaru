@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Ringkasan Sesi - Adaptive Math Learning{% endblock %}
+
+{% block content %}
+<div class="header">
+    <h1>🏆 Ringkasan Sesi Belajar</h1>
+    <p>{{ topic['name'] }}</p>
+</div>
+
+<div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; text-align: center;">
+    <h2 style="margin-bottom: 30px;">📊 Performa Sesi Ini</h2>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+        <div style="background: rgba(255,255,255,0.2); padding: 25px; border-radius: 15px;">
+            <div style="font-size: 3em; margin-bottom: 10px;">📝</div>
+            <div style="font-size: 2.5em; font-weight: bold;">{{ attempted }}</div>
+            <div>Soal Dikerjakan</div>
+        </div>
+        
+        <div style="background: rgba(255,255,255,0.2); padding: 25px; border-radius: 15px;">
+            <div style="font-size: 3em; margin-bottom: 10px;">✓</div>
+            <div style="font-size: 2.5em; font-weight: bold;">{{ correct }}</div>
+            <div>Jawaban Benar</div>
+        </div>
+        
+        <div style="background: rgba(255,255,255,0.2); padding: 25px; border-radius: 15px;">
+            <div style="font-size: 3em; margin-bottom: 10px;">🎯</div>
+            <div style="font-size: 2.5em; font-weight: bold;">{{ accuracy | round | int }}%</div>
+            <div>Akurasi</div>
+        </div>
+        
+        <div style="background: rgba(255,255,255,0.2); padding: 25px; border-radius: 15px;">
+            <div style="font-size: 3em; margin-bottom: 10px;">📈</div>
+            <div style="font-size: 2.5em; font-weight: bold;">{{ (knowledge_level * 100) | round | int }}%</div>
+            <div>Level Penguasaan</div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h3 style="color: #667eea; margin-bottom: 20px;">🎓 Progress Level Penguasaan</h3>
+    <div class="progress-bar" style="height: 40px;">
+        <div class="progress-fill" style="width: {{ (knowledge_level * 100) }}%; font-size: 1.2em;">
+            {{ (knowledge_level * 100) | round | int }}%
+        </div>
+    </div>
+    <div style="display: flex; justify-content: space-between; margin-top: 10px; color: #666; font-size: 0.9em;">
+        <span>0% - Pemula 🌱</span>
+        <span>40% - Berkembang 📈</span>
+        <span>60% - Baik 👍</span>
+        <span>80% - Mahir 🏆</span>
+        <span>100% - Master 👑</span>
+    </div>
+</div>
+
+<div class="card">
+    <h3 style="color: #667eea; margin-bottom: 20px;">💡 Insights & Rekomendasi</h3>
+    {% for insight in insights %}
+    <div style="padding: 15px; background: #f8f9fa; border-left: 4px solid #667eea; margin-bottom: 15px; border-radius: 5px;">
+        {{ insight }}
+    </div>
+    {% endfor %}
+</div>
+
+{% if accuracy >= 80 %}
+<div class="card" style="background: #d4edda; border-color: #28a745;">
+    <h3 style="color: #155724; margin-bottom: 15px;">🎉 Kerja Bagus!</h3>
+    <p style="color: #155724; line-height: 1.8;">
+        Kamu menunjukkan pemahaman yang sangat baik pada topik ini! Performamu menunjukkan bahwa 
+        kamu siap untuk tantangan yang lebih besar. Teruskan semangat belajarmu! 🚀
+    </p>
+</div>
+{% elif accuracy >= 60 %}
+<div class="card" style="background: #fff3cd; border-color: #ffc107;">
+    <h3 style="color: #856404; margin-bottom: 15px;">👍 Performa Bagus!</h3>
+    <p style="color: #856404; line-height: 1.8;">
+        Kamu sudah memahami sebagian besar materi. Dengan latihan lebih banyak, kamu akan 
+        semakin menguasai topik ini. Jangan berhenti di sini! 💪
+    </p>
+</div>
+{% else %}
+<div class="card" style="background: #d1ecf1; border-color: #17a2b8;">
+    <h3 style="color: #0c5460; margin-bottom: 15px;">💪 Terus Semangat!</h3>
+    <p style="color: #0c5460; line-height: 1.8;">
+        Belajar adalah proses yang membutuhkan waktu. Tidak apa-apa jika masih banyak yang perlu 
+        dipelajari. Yang penting adalah kamu terus mencoba dan tidak menyerah. Sistem kami akan 
+        membantu kamu berkembang step by step! 🌱
+    </p>
+</div>
+{% endif %}
+
+<div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+    <h3 style="margin-bottom: 20px;">🚀 Apa Selanjutnya?</h3>
+    <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
+        {% if knowledge_level >= 0.7 %}
+        <a href="{{ url_for('dashboard') }}" class="btn" style="background: white; color: #667eea;">
+            📚 Pilih Topik Baru
+        </a>
+        {% else %}
+        <a href="{{ url_for('practice', topic_id=topic['id']) }}" class="btn" style="background: white; color: #667eea;">
+            ✏️ Latihan Lagi
+        </a>
+        <a href="{{ url_for('learn', topic_id=topic['id']) }}" class="btn btn-secondary">
+            📖 Review Materi
+        </a>
+        {% endif %}
+        
+        <a href="{{ url_for('analytics') }}" class="btn btn-secondary">
+            📊 Lihat Analytics
+        </a>
+        
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+            🏠 Dashboard
+        </a>
+    </div>
+</div>
+
+<div class="card" style="background: #e7f3ff; border-color: #007bff;">
+    <h4 style="color: #004085; margin-bottom: 10px;">📅 Tips untuk Sesi Berikutnya</h4>
+    <ul style="color: #004085; line-height: 1.8; padding-left: 20px;">
+        <li>Belajar secara konsisten lebih efektif daripada marathon session</li>
+        <li>Jangan ragu untuk review materi jika ada yang belum jelas</li>
+        <li>Manfaatkan feedback dari sistem untuk meningkatkan pemahaman</li>
+        <li>Ingat bahwa setiap orang belajar dengan kecepatan berbeda - fokus pada progressmu sendiri!</li>
+    </ul>
+</div>
+{% endblock %}

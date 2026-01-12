@@ -1,0 +1,288 @@
+/* ============================================
+   TEXT-TO-SPEECH STYLES
+   For Auditory Learning Support
+   ============================================ */
+
+/* TTS Button Base Style */
+.tts-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 10px 5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+}
+
+.tts-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+}
+
+.tts-button:active {
+    transform: translateY(0);
+}
+
+.tts-button.speaking {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 4px 10px rgba(240, 147, 251, 0.3);
+    }
+    50% {
+        box-shadow: 0 4px 20px rgba(240, 147, 251, 0.6);
+    }
+}
+
+/* Auditory Player Container */
+.auditory-player {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+    border-radius: 15px;
+    margin: 20px 0;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    text-align: center;
+}
+
+.tts-play-button {
+    background: white;
+    color: #667eea;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.tts-play-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Audio Controls */
+.audio-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.tts-control-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tts-control-btn:hover {
+    background: white;
+    color: #667eea;
+}
+
+.audio-status {
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    margin-left: 10px;
+}
+
+/* Auditory Banner */
+.auditory-banner {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    padding: 15px 20px;
+    text-align: center;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(240, 147, 251, 0.3);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.banner-icon {
+    font-size: 24px;
+    animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+.banner-text {
+    font-size: 16px;
+}
+
+/* TTS Button in Content */
+.content-section {
+    position: relative;
+}
+
+.content-section .tts-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 12px;
+    padding: 8px 15px;
+}
+
+/* Question Read Button */
+.question-audio-btn {
+    display: inline-block;
+    margin: 10px 0;
+    background: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.question-audio-btn:hover {
+    background: #45a049;
+    transform: translateY(-2px);
+}
+
+/* Feedback Audio */
+.feedback-audio {
+    background: rgba(102, 126, 234, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.feedback-audio-btn {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.feedback-audio-btn:hover {
+    background: #5568d3;
+}
+
+/* TTS Enabled Sections */
+.tts-enabled {
+    padding-left: 60px;
+    position: relative;
+}
+
+.tts-enabled::before {
+    content: "👂";
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 24px;
+    opacity: 0.5;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .auditory-player {
+        padding: 15px;
+    }
+    
+    .tts-play-button {
+        padding: 12px 25px;
+        font-size: 16px;
+    }
+    
+    .audio-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .tts-control-btn {
+        width: 100%;
+    }
+    
+    .auditory-banner {
+        font-size: 14px;
+        padding: 12px 15px;
+    }
+    
+    .banner-icon {
+        font-size: 20px;
+    }
+}
+
+/* Loading Animation for TTS */
+.tts-loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Tooltip for TTS support */
+.tts-tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tts-tooltip .tooltiptext {
+    visibility: hidden;
+    width: 200px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 10px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 12px;
+}
+
+.tts-tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}

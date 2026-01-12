@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Selamat Datang - Adaptive Math Learning{% endblock %}
+
+{% block content %}
+<div class="header">
+    <h1>🎓 Adaptive Math Learning</h1>
+    <p>Belajar Matematika dengan AI yang Menyesuaikan Diri dengan Kemampuanmu</p>
+</div>
+
+<div style="text-align: center; max-width: 800px; margin: 0 auto;">
+    <!-- Card utama dengan gradasi biru Copilot -->
+    <div class="card" style="background: linear-gradient(135deg, #0078D4 0%, #00BCF2 100%); color: white; border: none;">
+        <h2 style="margin-bottom: 20px;">✨ Fitur-Fitur Canggih</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 30px;">
+            <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;">
+                <div style="font-size: 3em;">🧠</div>
+                <h3>Adaptive Learning</h3>
+                <p>Sistem menyesuaikan tingkat kesulitan dengan kemampuanmu</p>
+            </div>
+            <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;">
+                <div style="font-size: 3em;">😊</div>
+                <h3>Emotion-Aware</h3>
+                <p>Sistem memahami perasaanmu saat belajar</p>
+            </div>
+            <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;">
+                <div style="font-size: 3em;">📈</div>
+                <h3>Progress Tracking</h3>
+                <p>Pantau perkembangan belajarmu secara real-time</p>
+            </div>
+            <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;">
+                <div style="font-size: 3em;">🎯</div>
+                <h3>Personalized</h3>
+                <p>Konten disesuaikan dengan gaya belajarmu</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Card cara kerja sistem -->
+    <div class="card" style="margin-top: 30px;">
+        <h2 style="color: #0078D4; margin-bottom: 20px;">🚀 Cara Kerja Sistem</h2>
+        <div style="text-align: left; max-width: 600px; margin: 0 auto;">
+            <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                <div style="background: #0078D4; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px;">1</div>
+                <div>
+                    <strong>Pilih Topik</strong> - Mulai dengan topik yang ingin kamu pelajari
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                <div style="background: #0078D4; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px;">2</div>
+                <div>
+                    <strong>Belajar Materi</strong> - Pelajari konsep dengan penjelasan yang disesuaikan levelmu
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                <div style="background: #0078D4; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px;">3</div>
+                <div>
+                    <strong>Latihan Soal</strong> - Kerjakan soal yang tingkat kesulitannya disesuaikan
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                <div style="background: #0078D4; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px;">4</div>
+                <div>
+                    <strong>Feedback Adaptif</strong> - Terima feedback dan sistem menyesuaikan pembelajaran berdasarkan perasaanmu
+                </div>
+            </div>
+            <div style="display: flex; align-items: center;">
+                <div style="background: #0078D4; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px;">5</div>
+                <div>
+                    <strong>Terus Berkembang</strong> - Sistem terus belajar dan menyesuaikan dengan progressmu
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tombol mulai belajar -->
+    <div style="margin-top: 40px;">
+        <a href="{{ url_for('register') }}" class="btn" style="font-size: 1.2em; padding: 15px 50px; background: #0078D4; color: white; border-radius: 10px;">
+            🎯 Mulai Belajar Sekarang
+        </a>
+    </div>
+    
+    <!-- Card kenapa adaptive learning -->
+    <div class="card" style="margin-top: 30px; background: #f8f9fa;">
+        <h3 style="color: #0078D4; margin-bottom: 15px;">💡 Kenapa Adaptive Learning?</h3>
+        <p style="text-align: left; line-height: 1.8;">
+            Sistem pembelajaran tradisional menggunakan pendekatan "one size fits all" yang tidak efektif untuk semua siswa. 
+            Setiap orang belajar dengan kecepatan dan cara yang berbeda. Sistem kami menggunakan AI untuk memahami 
+            kemampuan dan kondisi emosionalmu, lalu menyesuaikan materi dan tingkat kesulitan secara otomatis. 
+            Hasilnya? Pembelajaran yang lebih efektif, menyenangkan, dan mengurangi kecemasan matematika! 🚀
+        </p>
+    </div>
+</div>
+{% endblock %}

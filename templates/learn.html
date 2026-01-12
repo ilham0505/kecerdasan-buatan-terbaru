@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Belajar {{ topic['name'] }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/audio-styles.css') }}">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        /* Set learning style as data attribute for TTS detection */
+        body[data-learning-style="auditory"] .tts-button {
+            display: inline-block;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #667eea;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .progress-bar {
+            background: #e0e0e0;
+            height: 10px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+        
+        .content-section {
+            background: #f8f9ff;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+            position: relative;
+        }
+        
+        .content-section h3 {
+            color: #667eea;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* TTS Button in section header */
+        .section-audio-btn {
+            margin-left: auto;
+            font-size: 12px;
+            padding: 5px 15px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+    </style>
+</head>
+<body data-learning-style="{{ content.get('learning_style', 'visual') }}">
+    <div class="container">
+        <div class="header">
+            <h1>📚 {{ topic['name'] }}</h1>
+            <p class="subtitle">{{ topic['description'] }}</p>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: {{ (knowledge_level * 100)|int }}%"></div>
+            </div>
+            <p style="font-size: 14px; color: #666;">
+                Level Penguasaan: <strong>{{ (knowledge_level * 100)|int }}%</strong>
+            </p>
+        </div>
+        
+        <!-- Auditory Auto-Play Section (for Auditory learners) -->
+        {% if content.get('learning_style') == 'auditory' %}
+        <script>
+            // Collect all section text for auto-play
+            window.addEventListener('DOMContentLoaded', () => {
+                const allText = [];
+                document.querySelectorAll('.content-section').forEach(section => {
+                    const title = section.querySelector('h3')?.textContent || '';
+                    const content = section.querySelector('p, div')?.textContent || '';
+                    allText.push(title + '. ' + content);
+                });
+                
+                const fullText = allText.join('. ');
+                
+                // Show audio player at top
+                if (typeof speakForAuditory !== 'undefined') {
+                    speakForAuditory(fullText, false); // false = don't auto-play (user clicks)
+                }
+            });
+        </script>
+        {% endif %}
+        
+        <!-- Content Sections -->
+        {% for section in content['sections'] %}
+        <div class="content-section">
+            <h3>
+                {{ section['title'] }}
+                
+                <!-- TTS Button for this section -->
+                <button class="tts-button section-audio-btn" 
+                        onclick="tts.speak(`{{ section['title'] }}. {{ section['content']|replace('`', '')|replace('\n', ' ')|replace('  ', ' ') }}`)">
+                    🔊 Dengarkan
+                </button>
+            </h3>
+            
+            {% if section['type'] == 'introduction' %}
+                <p>{{ section['content'] }}</p>
+            
+            {% elif section['type'] == 'concept' %}
+                <div>{{ section['content']|safe }}</div>
+            
+            {% elif section['type'] == 'strategy' %}
+                <div>{{ section['content']|safe }}</div>
+            
+            {% elif section['type'] == 'example' %}
+                <div>{{ section['content']|safe }}</div>
+            
+            {% elif section['type'].startswith('vark_') %}
+                <!-- VARK-specific content -->
+                <div class="vark-content">
+                    {{ section['content']|safe }}
+                </div>
+            
+            {% elif section['type'] == 'tips' %}
+                <div style="background: #fff3cd; padding: 15px; border-radius: 10px; border-left: 4px solid #ffc107;">
+                    {{ section['content']|safe }}
+                </div>
+            
+            {% else %}
+                <p>{{ section['content'] }}</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+        
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="/dashboard" class="btn btn-secondary">
+                ⬅️ Kembali ke Dashboard
+            </a>
+            <a href="/practice/{{ topic['id'] }}" class="btn btn-primary">
+                ✏️ Mulai Latihan Soal
+            </a>
+        </div>
+    </div>
+    
+    <!-- TTS Script -->
+    <script src="{{ url_for('static', filename='js/text-to-speech.js') }}"></script>
+    
+    <script>
+        // Clean up TTS when leaving page
+        window.addEventListener('beforeunload', () => {
+            if (window.tts) {
+                window.tts.stop();
+            }
+        });
+    </script>
+</body>
+</html>

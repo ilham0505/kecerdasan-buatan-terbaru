@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Latihan - {{ topic['name'] }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/audio-styles.css') }}">
+    <style>
+        /* [Previous styles remain the same] */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        /* Question Audio Button */
+        .question-audio {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .read-question-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .read-question-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+        
+        .read-question-btn.speaking {
+            background: #f5576c;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✏️ Latihan Soal</h1>
+            <p class="subtitle">{{ topic['name'] }} - Difficulty Level {{ difficulty }}</p>
+        </div>
+        
+        <!-- Question Section -->
+        <div class="question-section">
+            <h2 id="questionText">{{ question }}</h2>
+            
+            <!-- Audio Button for Question (ESPECIALLY for Auditory learners) -->
+            <div class="question-audio">
+                <button class="read-question-btn" id="readQuestionBtn" onclick="readQuestionAloud()">
+                    🔊 Bacakan Soal
+                </button>
+            </div>
+        </div>
+        
+        <!-- Answer Input -->
+        <div class="answer-section">
+            <label for="answerInput">Jawabanmu:</label>
+            <input type="text" id="answerInput" placeholder="Tulis jawaban di sini">
+        </div>
+        
+        <!-- Emotion Selector -->
+        <div class="emotion-section">
+            <p>Bagaimana perasaanmu tentang soal ini?</p>
+            <div class="emotion-buttons">
+                <button class="emotion-btn" data-emotion="confident">
+                    😊<br>Percaya Diri
+                </button>
+                <button class="emotion-btn" data-emotion="happy">
+                    😃<br>Senang
+                </button>
+                <button class="emotion-btn" data-emotion="neutral">
+                    😐<br>Biasa Saja
+                </button>
+                <button class="emotion-btn" data-emotion="confused">
+                    🤔<br>Bingung
+                </button>
+                <button class="emotion-btn" data-emotion="frustrated">
+                    😤<br>Frustasi
+                </button>
+                <button class="emotion-btn" data-emotion="anxious">
+                    😰<br>Cemas
+                </button>
+            </div>
+        </div>
+        
+        <!-- Submit Button -->
+        <button class="submit-btn" id="submitBtn">✓ Cek Jawaban</button>
+        
+        <!-- Feedback Section (hidden initially) -->
+        <div class="feedback-section" id="feedbackSection" style="display: none;">
+            <div class="feedback-content" id="feedbackContent"></div>
+            
+            <!-- Audio for Feedback -->
+            <div class="feedback-audio">
+                <button class="feedback-audio-btn" id="readFeedbackBtn">
+                    🔊 Dengarkan Feedback
+                </button>
+            </div>
+            
+            <div class="next-action" id="nextAction"></div>
+        </div>
+    </div>
+    
+    <!-- TTS Script -->
+    <script src="{{ url_for('static', filename='js/text-to-speech.js') }}"></script>
+    
+    <script>
+        // Store question text
+        const questionText = document.getElementById('questionText').textContent;
+        let selectedEmotion = 'neutral';
+        let feedbackText = '';
+        
+        // Read question aloud function
+        function readQuestionAloud() {
+            const button = document.getElementById('readQuestionBtn');
+            
+            if (window.tts) {
+                window.tts.toggle(questionText, button);
+            } else {
+                alert('Text-to-Speech tidak tersedia di browser Anda.');
+            }
+        }
+        
+        // Emotion selection
+        document.querySelectorAll('.emotion-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove selected class from all
+                document.querySelectorAll('.emotion-btn').forEach(b => 
+                    b.classList.remove('selected')
+                );
+                
+                // Add to clicked
+                this.classList.add('selected');
+                selectedEmotion = this.dataset.emotion;
+            });
+        });
+        
+        // Submit answer
+        document.getElementById('submitBtn').addEventListener('click', submitAnswer);
+        
+        // Also submit on Enter key
+        document.getElementById('answerInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                submitAnswer();
+            }
+        });
+        
+        function submitAnswer() {
+            const answer = document.getElementById('answerInput').value.trim();
+            
+            if (!answer) {
+                alert('Mohon isi jawaban terlebih dahulu!');
+                return;
+            }
+            
+            // Stop question audio if playing
+            if (window.tts) {
+                window.tts.stop();
+            }
+            
+            // Send to server
+            fetch('/submit_answer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    answer: answer,
+                    emotion: selectedEmotion
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                showFeedback(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan. Silakan coba lagi.');
+            });
+        }
+        
+        function showFeedback(data) {
+            const feedbackSection = document.getElementById('feedbackSection');
+            const feedbackContent = document.getElementById('feedbackContent');
+            const nextAction = document.getElementById('nextAction');
+            
+            // Store feedback text for audio
+            feedbackText = data.feedback;
+            
+            // Build feedback HTML
+            let html = '<div class="result-badge ' + (data.is_correct ? 'correct' : 'incorrect') + '">';
+            html += data.is_correct ? '✓ BENAR!' : '✗ Belum Tepat';
+            html += '</div>';
+            
+            html += '<div class="feedback-text">' + data.feedback + '</div>';
+            
+            if (!data.is_correct) {
+                html += '<div class="explanation">';
+                html += '<strong>Penjelasan:</strong><br>' + data.explanation;
+                html += '</div>';
+            }
+            
+            html += '<div class="knowledge-update">';
+            html += 'Level Penguasaan: <strong>' + Math.round(data.knowledge_level * 100) + '%</strong>';
+            html += '</div>';
+            
+            feedbackContent.innerHTML = html;
+            
+            // Show next action
+            const action = data.next_action;
+            let actionHtml = '<h3>💡 ' + action.recommendation + '</h3>';
+            
+            if (action.action === 'continue_practice') {
+                actionHtml += '<a href="/practice/{{ topic['id'] }}" class="btn btn-primary">✏️ Soal Berikutnya</a>';
+            } else if (action.action === 'review_material') {
+                actionHtml += '<a href="/learn/{{ topic['id'] }}" class="btn btn-warning">📖 Review Materi</a>';
+                actionHtml += '<a href="/practice/{{ topic['id'] }}" class="btn btn-secondary">✏️ Coba Lagi</a>';
+            } else if (action.action === 'easier_content') {
+                actionHtml += '<a href="/learn/{{ topic['id'] }}" class="btn btn-warning">📖 Penjelasan Lebih Mudah</a>';
+            } else if (action.action === 'end_session') {
+                actionHtml += '<a href="/session_summary/{{ topic['id'] }}" class="btn btn-success">🏆 Lihat Ringkasan</a>';
+            }
+            
+            actionHtml += '<a href="/dashboard" class="btn btn-secondary">⬅️ Kembali</a>';
+            
+            nextAction.innerHTML = actionHtml;
+            
+            // Show feedback section
+            feedbackSection.style.display = 'block';
+            
+            // Scroll to feedback
+            feedbackSection.scrollIntoView({ behavior: 'smooth' });
+            
+            // Auto-read feedback for Auditory learners
+            const isAuditory = {{ 'true' if session.get('learning_style') == 'auditory' else 'false' }};
+            if (isAuditory && window.readFeedback) {
+                // Delay to let user see the feedback first
+                setTimeout(() => {
+                    window.readFeedback(feedbackText);
+                }, 1000);
+            }
+        }
+        
+        // Read feedback button
+        document.getElementById('readFeedbackBtn').addEventListener('click', () => {
+            if (window.readFeedback) {
+                window.readFeedback(feedbackText);
+            }
+        });
+        
+        // Clean up on page leave
+        window.addEventListener('beforeunload', () => {
+            if (window.tts) {
+                window.tts.stop();
+            }
+        });
+        
+        // Auto-read question for Auditory learners on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const isAuditory = {{ 'true' if session.get('learning_style') == 'auditory' else 'false' }};
+            
+            if (isAuditory) {
+                // Show banner for auditory learners
+                const banner = document.createElement('div');
+                banner.className = 'auditory-banner';
+                banner.innerHTML = `
+                    <span class="banner-icon">👂</span>
+                    <span class="banner-text">Mode Auditory: Klik 🔊 untuk mendengarkan soal</span>
+                `;
+                document.body.insertBefore(banner, document.body.firstChild);
+                
+                // Optional: Auto-play question after 1 second
+                // setTimeout(() => readQuestionAloud(), 1000);
+            }
+        });
+    </script>
+</body>
+</html>

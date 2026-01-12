@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar - Sistem Pembelajaran Adaptif</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .info-box {
+            background: #f8f9ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+        }
+
+        .info-box h3 {
+            color: #667eea;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .info-box p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .learning-styles {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .style-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+            position: relative;
+        }
+
+        .style-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .style-card.selected {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .style-card input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .style-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .style-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .style-desc {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .enhanced-badge {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .learning-styles {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎓 Selamat Datang!</h1>
+        <p class="subtitle">Mari mulai perjalanan belajar matematika yang menyenangkan</p>
+
+        <form method="POST" action="/register">
+            <div class="form-group">
+                <label for="name">Nama Lengkap</label>
+                <input type="text" id="name" name="name" required placeholder="Masukkan nama lengkap Anda">
+            </div>
+
+            {% if enhanced_mode %}
+            <div class="info-box">
+                <h3>🌟 Mode Enhanced Aktif <span class="enhanced-badge">VARK</span></h3>
+                <p>Sistem akan menyesuaikan materi dengan gaya belajar Anda untuk hasil maksimal!</p>
+            </div>
+
+            <div class="form-group">
+                <label>Gaya Belajar Favorit</label>
+                <p style="font-size: 13px; color: #666; margin-bottom: 15px;">
+                    Pilih cara belajar yang paling cocok dengan Anda. Sistem akan menyesuaikan materi berdasarkan pilihan ini.
+                </p>
+
+                <div class="learning-styles">
+                    <label class="style-card" onclick="selectStyle('visual')">
+                        <input type="radio" name="learning_style" value="visual" checked>
+                        <span class="style-icon">👁️</span>
+                        <div class="style-name">Visual</div>
+                        <div class="style-desc">Belajar melalui gambar, diagram, dan warna</div>
+                    </label>
+
+                    <label class="style-card" onclick="selectStyle('auditory')">
+                        <input type="radio" name="learning_style" value="auditory">
+                        <span class="style-icon">👂</span>
+                        <div class="style-name">Auditory</div>
+                        <div class="style-desc">Belajar melalui mendengar dan diskusi</div>
+                    </label>
+
+                    <label class="style-card" onclick="selectStyle('reading')">
+                        <input type="radio" name="learning_style" value="reading">
+                        <span class="style-icon">📝</span>
+                        <div class="style-name">Reading/Writing</div>
+                        <div class="style-desc">Belajar melalui membaca dan menulis</div>
+                    </label>
+
+                    <label class="style-card" onclick="selectStyle('kinesthetic')">
+                        <input type="radio" name="learning_style" value="kinesthetic">
+                        <span class="style-icon">🤸</span>
+                        <div class="style-name">Kinesthetic</div>
+                        <div class="style-desc">Belajar melalui praktek dan aktivitas</div>
+                    </label>
+                </div>
+            </div>
+            {% else %}
+            <input type="hidden" name="learning_style" value="visual">
+            {% endif %}
+
+            <button type="submit" class="submit-btn">🚀 Mulai Belajar</button>
+        </form>
+    </div>
+
+    <script>
+        function selectStyle(style) {
+            // Remove selected class from all cards
+            document.querySelectorAll('.style-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked card
+            event.currentTarget.classList.add('selected');
+        }
+
+        // Set initial selection
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('.style-card').classList.add('selected');
+        });
+    </script>
+</body>
+</html>
