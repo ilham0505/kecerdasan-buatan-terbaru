@@ -4,295 +4,416 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Latihan - {{ topic['name'] }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/audio-styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Poppins:wght@600&display=swap" rel="stylesheet">
     <style>
-        /* [Previous styles remain the same] */
+        :root {
+            --primary: #6c5ce7;
+            --primary-light: #a29bfe;
+            --success: #00b894;
+            --danger: #ff7675;
+            --warning: #fdcb6e;
+            --dark: #2d3436;
+            --glass: rgba(255, 255, 255, 0.95);
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Quicksand', sans-serif;
             margin: 0;
             padding: 0;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        
+
         .container {
-            max-width: 800px;
+            max-width: 650px;
+            width: 90%;
             margin: 20px auto;
-            padding: 30px;
-            background: white;
-            border-radius: 20px;
+            padding: 40px;
+            background: var(--glass);
+            border-radius: 30px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
         }
-        
-        /* Question Audio Button */
-        .question-audio {
+
+        /* Level Progress Display */
+        .level-info {
             text-align: center;
-            margin: 20px 0;
-        }
-        
-        .read-question-btn {
-            background: #4CAF50;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            padding: 15px 20px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+
+        .level-info span {
+            display: block;
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        /* Progress Bar Section */
+        .progress-wrapper {
+            margin-bottom: 30px;
+        }
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        .progress-bar {
+            height: 12px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--success);
+            width: 0%;
+            transition: width 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            color: var(--dark);
+            font-size: 1.8rem;
+        }
+        .level-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: var(--primary-light);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-top: 5px;
+        }
+
+        /* Question Box */
+        .question-box {
+            background: #f9f9ff;
+            border: 2px solid #edefff;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        #questionText {
+            font-size: 1.4rem;
+            color: var(--dark);
+            margin: 0 0 20px 0;
+            line-height: 1.5;
+        }
+
+        /* Button Style */
+        .btn {
             border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: 15px;
+            font-family: inherit;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
-        
-        .read-question-btn:hover {
-            background: #45a049;
+        .btn-audio {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        .btn-audio:hover {
+            background: var(--primary);
+            color: white;
+        }
+        .btn-audio.speaking {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: white;
+            animation: pulse 1.2s infinite;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            font-size: 1.1rem;
+            padding: 16px;
+            justify-content: center;
+            box-shadow: 0 8px 15px rgba(108, 92, 231, 0.3);
+        }
+        .submit-btn:hover {
             transform: translateY(-2px);
+            box-shadow: 0 12px 20px rgba(108, 92, 231, 0.4);
         }
-        
-        .read-question-btn.speaking {
-            background: #f5576c;
-            animation: pulse 1.5s ease-in-out infinite;
+
+        /* Input Field */
+        .input-group {
+            margin-bottom: 25px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #ddd;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-family: inherit;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Emotions */
+        .emotion-title {
+            text-align: center;
+            font-weight: 700;
+            color: #636e72;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+        }
+        .emotion-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        .emotion-btn {
+            background: white;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .emotion-btn.active {
+            background: var(--primary-light);
+            color: white;
+            border-color: var(--primary-light);
+        }
+
+        /* Feedback Section */
+        .feedback-card {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 20px;
+            animation: slideUp 0.5s ease-out;
+            display: none;
+        }
+        .result-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .correct { color: var(--success); background: #e6fffb; border: 2px solid #b7eb8f; }
+        .wrong { color: var(--danger); background: #fff1f0; border: 2px solid #ffa39e; }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 500px) {
+            .emotion-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
 <body>
+
     <div class="container">
+        <!-- Level Info Display -->
+        <div class="level-info">
+            🎯 {{ level_info }}
+            <span>Total Soal: {{ total_progress }}</span>
+        </div>
+
+        <div class="progress-wrapper">
+            <div class="progress-label">
+                <span>Progress Belajar</span>
+                <span id="progressText">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+        </div>
+
         <div class="header">
             <h1>✏️ Latihan Soal</h1>
-            <p class="subtitle">{{ topic['name'] }} - Difficulty Level {{ difficulty }}</p>
+            <div class="level-badge" id="levelDisplay">Level {{ difficulty }}</div>
         </div>
         
-        <!-- Question Section -->
-        <div class="question-section">
+        <div class="question-box">
             <h2 id="questionText">{{ question }}</h2>
-            
-            <!-- Audio Button for Question (ESPECIALLY for Auditory learners) -->
-            <div class="question-audio">
-                <button class="read-question-btn" id="readQuestionBtn" onclick="readQuestionAloud()">
-                    🔊 Bacakan Soal
-                </button>
-            </div>
+            <button class="btn btn-audio" id="readQuestionBtn" onclick="readQuestion()">
+                <span>🔊 Bacakan Soal</span>
+            </button>
         </div>
         
-        <!-- Answer Input -->
-        <div class="answer-section">
-            <label for="answerInput">Jawabanmu:</label>
-            <input type="text" id="answerInput" placeholder="Tulis jawaban di sini">
+        <div class="input-group">
+            <input type="text" id="answerInput" placeholder="Ketik jawabanmu di sini..." autocomplete="off">
         </div>
-        
-        <!-- Emotion Selector -->
+
         <div class="emotion-section">
-            <p>Bagaimana perasaanmu tentang soal ini?</p>
-            <div class="emotion-buttons">
-                <button class="emotion-btn" data-emotion="confident">
-                    😊<br>Percaya Diri
-                </button>
-                <button class="emotion-btn" data-emotion="happy">
-                    😃<br>Senang
-                </button>
-                <button class="emotion-btn" data-emotion="neutral">
-                    😐<br>Biasa Saja
-                </button>
-                <button class="emotion-btn" data-emotion="confused">
-                    🤔<br>Bingung
-                </button>
-                <button class="emotion-btn" data-emotion="frustrated">
-                    😤<br>Frustasi
-                </button>
-                <button class="emotion-btn" data-emotion="anxious">
-                    😰<br>Cemas
-                </button>
+            <div class="emotion-title">Apa yang kamu rasakan?</div>
+            <div class="emotion-grid">
+                <button class="emotion-btn" onclick="setEmotion(this, 'confident')">😊 Yakin</button>
+                <button class="emotion-btn" onclick="setEmotion(this, 'happy')">😃 Senang</button>
+                <button class="emotion-btn active" onclick="setEmotion(this, 'neutral')">😐 Biasa</button>
+                <button class="emotion-btn" onclick="setEmotion(this, 'confused')">🤔 Bingung</button>
+                <button class="emotion-btn" onclick="setEmotion(this, 'frustrated')">😤 Kesal</button>
+                <button class="emotion-btn" onclick="setEmotion(this, 'anxious')">😰 Takut</button>
             </div>
         </div>
         
-        <!-- Submit Button -->
-        <button class="submit-btn" id="submitBtn">✓ Cek Jawaban</button>
+        <button class="btn submit-btn" id="submitBtn" onclick="processAnswer()">
+            <span>✓ Cek Jawaban</span>
+        </button>
         
-        <!-- Feedback Section (hidden initially) -->
-        <div class="feedback-section" id="feedbackSection" style="display: none;">
-            <div class="feedback-content" id="feedbackContent"></div>
+        <div id="feedbackCard" class="feedback-card">
+            <div id="resultTitle" class="result-title"></div>
+            <p id="feedbackText" style="line-height: 1.6;"></p>
             
-            <!-- Audio for Feedback -->
-            <div class="feedback-audio">
-                <button class="feedback-audio-btn" id="readFeedbackBtn">
-                    🔊 Dengarkan Feedback
+            <div style="text-align: center; margin: 20px 0;">
+                <button class="btn btn-audio" id="readFeedbackBtn">
+                    <span>🔊 Dengarkan Penjelasan</span>
                 </button>
             </div>
             
-            <div class="next-action" id="nextAction"></div>
+            <div id="actionArea" style="display: flex; flex-direction: column; gap: 10px;"></div>
         </div>
     </div>
     
-    <!-- TTS Script -->
     <script src="{{ url_for('static', filename='js/text-to-speech.js') }}"></script>
     
     <script>
-        // Store question text
-        const questionText = document.getElementById('questionText').textContent;
-        let selectedEmotion = 'neutral';
-        let feedbackText = '';
-        
-        // Read question aloud function
-        function readQuestionAloud() {
-            const button = document.getElementById('readQuestionBtn');
-            
+        let currentEmotion = 'neutral';
+        const rawQuestion = document.getElementById('questionText').innerText;
+
+        function setEmotion(btn, emotion) {
+            document.querySelectorAll('.emotion-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentEmotion = emotion;
+        }
+
+        function readQuestion() {
             if (window.tts) {
-                window.tts.toggle(questionText, button);
-            } else {
-                alert('Text-to-Speech tidak tersedia di browser Anda.');
+                window.tts.toggle(rawQuestion, document.getElementById('readQuestionBtn'));
             }
         }
-        
-        // Emotion selection
-        document.querySelectorAll('.emotion-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                // Remove selected class from all
-                document.querySelectorAll('.emotion-btn').forEach(b => 
-                    b.classList.remove('selected')
-                );
-                
-                // Add to clicked
-                this.classList.add('selected');
-                selectedEmotion = this.dataset.emotion;
-            });
-        });
-        
-        // Submit answer
-        document.getElementById('submitBtn').addEventListener('click', submitAnswer);
-        
-        // Also submit on Enter key
-        document.getElementById('answerInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                submitAnswer();
-            }
-        });
-        
-        function submitAnswer() {
-            const answer = document.getElementById('answerInput').value.trim();
-            
-            if (!answer) {
-                alert('Mohon isi jawaban terlebih dahulu!');
-                return;
-            }
-            
-            // Stop question audio if playing
-            if (window.tts) {
-                window.tts.stop();
-            }
-            
-            // Send to server
+
+        function processAnswer() {
+            const val = document.getElementById('answerInput').value.trim();
+            if(!val) return alert("Jawaban tidak boleh kosong!");
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerText = "Memeriksa...";
+
             fetch('/submit_answer', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    answer: answer,
-                    emotion: selectedEmotion
-                })
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ answer: val, emotion: currentEmotion })
             })
-            .then(response => response.json())
+            .then(res => res.json())
             .then(data => {
-                showFeedback(data);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Terjadi kesalahan. Silakan coba lagi.');
+                displayFeedback(data);
+                btn.disabled = false;
+                btn.innerText = "✓ Cek Jawaban";
             });
         }
-        
-        function showFeedback(data) {
-            const feedbackSection = document.getElementById('feedbackSection');
-            const feedbackContent = document.getElementById('feedbackContent');
-            const nextAction = document.getElementById('nextAction');
+
+        function displayFeedback(data) {
+            const card = document.getElementById('feedbackCard');
+            const title = document.getElementById('resultTitle');
+            const text = document.getElementById('feedbackText');
+            const action = document.getElementById('actionArea');
+
+            // Set Progress
+            const p = Math.round(data.knowledge_level * 100);
+            document.getElementById('progressBar').style.width = p + '%';
+            document.getElementById('progressText').innerText = p + '%';
+
+            // Styling Correct/Wrong
+            card.className = 'feedback-card ' + (data.is_correct ? 'correct' : 'wrong');
+            card.style.display = 'block';
+
+            title.innerText = data.is_correct ? '🎉 BENAR!' : '😅 BELUM TEPAT';
+            text.innerHTML = `<strong>Feedback:</strong> ${data.feedback}`;
             
-            // Store feedback text for audio
-            feedbackText = data.feedback;
-            
-            // Build feedback HTML
-            let html = '<div class="result-badge ' + (data.is_correct ? 'correct' : 'incorrect') + '">';
-            html += data.is_correct ? '✓ BENAR!' : '✗ Belum Tepat';
-            html += '</div>';
-            
-            html += '<div class="feedback-text">' + data.feedback + '</div>';
-            
-            if (!data.is_correct) {
-                html += '<div class="explanation">';
-                html += '<strong>Penjelasan:</strong><br>' + data.explanation;
-                html += '</div>';
+            if(!data.is_correct) {
+                text.innerHTML += `<br><br><strong>Kunci:</strong> ${data.explanation}`;
             }
-            
-            html += '<div class="knowledge-update">';
-            html += 'Level Penguasaan: <strong>' + Math.round(data.knowledge_level * 100) + '%</strong>';
-            html += '</div>';
-            
-            feedbackContent.innerHTML = html;
-            
-            // Show next action
-            const action = data.next_action;
-            let actionHtml = '<h3>💡 ' + action.recommendation + '</h3>';
-            
-            if (action.action === 'continue_practice') {
-                actionHtml += '<a href="/practice/{{ topic['id'] }}" class="btn btn-primary">✏️ Soal Berikutnya</a>';
-            } else if (action.action === 'review_material') {
-                actionHtml += '<a href="/learn/{{ topic['id'] }}" class="btn btn-warning">📖 Review Materi</a>';
-                actionHtml += '<a href="/practice/{{ topic['id'] }}" class="btn btn-secondary">✏️ Coba Lagi</a>';
-            } else if (action.action === 'easier_content') {
-                actionHtml += '<a href="/learn/{{ topic['id'] }}" class="btn btn-warning">📖 Penjelasan Lebih Mudah</a>';
-            } else if (action.action === 'end_session') {
-                actionHtml += '<a href="/session_summary/{{ topic['id'] }}" class="btn btn-success">🏆 Lihat Ringkasan</a>';
-            }
-            
-            actionHtml += '<a href="/dashboard" class="btn btn-secondary">⬅️ Kembali</a>';
-            
-            nextAction.innerHTML = actionHtml;
-            
-            // Show feedback section
-            feedbackSection.style.display = 'block';
-            
-            // Scroll to feedback
-            feedbackSection.scrollIntoView({ behavior: 'smooth' });
-            
-            // Auto-read feedback for Auditory learners
-            const isAuditory = {{ 'true' if session.get('learning_style') == 'auditory' else 'false' }};
-            if (isAuditory && window.readFeedback) {
-                // Delay to let user see the feedback first
-                setTimeout(() => {
-                    window.readFeedback(feedbackText);
-                }, 1000);
-            }
-        }
-        
-        // Read feedback button
-        document.getElementById('readFeedbackBtn').addEventListener('click', () => {
-            if (window.readFeedback) {
-                window.readFeedback(feedbackText);
-            }
-        });
-        
-        // Clean up on page leave
-        window.addEventListener('beforeunload', () => {
-            if (window.tts) {
-                window.tts.stop();
-            }
-        });
-        
-        // Auto-read question for Auditory learners on page load
-        window.addEventListener('DOMContentLoaded', () => {
-            const isAuditory = {{ 'true' if session.get('learning_style') == 'auditory' else 'false' }};
-            
-            if (isAuditory) {
-                // Show banner for auditory learners
-                const banner = document.createElement('div');
-                banner.className = 'auditory-banner';
-                banner.innerHTML = `
-                    <span class="banner-icon">👂</span>
-                    <span class="banner-text">Mode Auditory: Klik 🔊 untuk mendengarkan soal</span>
+
+            // Tombol Navigasi berdasarkan next_action
+            let actHtml = '';
+            if(data.next_action.action === 'continue_practice') {
+                const remaining = data.next_action.remaining;
+                const level = data.next_action.current_level;
+                actHtml = `<a href="/practice/{{ topic['id'] }}" class="btn submit-btn" style="background:var(--success)">
+                    Soal Berikutnya (${remaining} soal lagi di Level ${level}) ➔
+                </a>`;
+            } else if(data.next_action.action === 'level_complete') {
+                actHtml = `
+                    <div style="text-align:center; padding:15px; background:#fff3cd; border-radius:15px; margin-bottom:15px;">
+                        <strong>🎉 ${data.next_action.message}</strong>
+                    </div>
+                    <a href="/practice/{{ topic['id'] }}" class="btn submit-btn" style="background:var(--warning)">
+                        Mulai Level ${data.next_action.next_level} ➔
+                    </a>
                 `;
-                document.body.insertBefore(banner, document.body.firstChild);
-                
-                // Optional: Auto-play question after 1 second
-                // setTimeout(() => readQuestionAloud(), 1000);
+            } else if(data.next_action.action === 'all_complete') {
+                actHtml = `
+                    <div style="text-align:center; padding:15px; background:#d4edda; border-radius:15px; margin-bottom:15px;">
+                        <strong>🏆 ${data.next_action.message}</strong>
+                    </div>
+                    <a href="/dashboard" class="btn submit-btn" style="background:var(--success)">
+                        Kembali ke Dashboard
+                    </a>
+                `;
+            } else {
+                actHtml = `<a href="/dashboard" class="btn submit-btn">Kembali ke Dashboard</a>`;
             }
+            action.innerHTML = actHtml;
+
+            // Audio Feedback
+            document.getElementById('readFeedbackBtn').onclick = () => {
+                window.tts.toggle(data.feedback, document.getElementById('readFeedbackBtn'));
+            };
+
+            // Auto Scroll
+            card.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Enter key support
+        document.getElementById('answerInput').addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') processAnswer();
         });
     </script>
 </body>

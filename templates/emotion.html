@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Emotion Detection</title>
+</head>
+<body>
+
+<h2>Deteksi Emosi</h2>
+
+<video id="video" width="320" height="240" autoplay></video>
+<canvas id="canvas" width="224" height="224" style="display:none"></canvas>
+
+<p id="emotion">Emosi: -</p>
+
+<script src="{{ url_for('static', filename='js/emotion.js') }}"></script>
+
+</body>
+</html>

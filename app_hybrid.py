@@ -98,6 +98,19 @@ def init_db():
     conn.commit()
     conn.close()
 
+# Load emotion model jika ada
+try:
+    emotion_model = tf.keras.models.load_model('emotion_model.h5')
+    EMOTIONS = ['Marah', 'Jijik', 'Takut', 'Senang', 'Sedih', 'Terkejut', 'Biasa']
+    EMOTION_MODEL_LOADED = True
+    print("✅ Emotion model loaded successfully")
+except Exception as e:
+    print(f"⚠️ Could not load emotion model: {e}")
+    print("⚠️ Emotion detection will not work")
+    EMOTION_MODEL_LOADED = False
+    emotion_model = None
+    EMOTIONS = []
+
 # Seed initial topics
 def seed_topics():
     conn = sqlite3.connect('learning_data.db')
@@ -162,8 +175,9 @@ def get_student_learning_style():
 # ------------------------------
 
 @app.route("/")
-def home():
-    return render_template("home.html")
+def index():
+    return redirect(url_for("register"))
+
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -174,18 +188,23 @@ def register():
         if name:
             conn = get_db()
             c = conn.cursor()
-            c.execute("INSERT INTO students (name, learning_style, created_at) VALUES (?, ?, ?)",
-                     (name, learning_style, datetime.now()))
+            c.execute("""
+                INSERT INTO students (name, learning_style, created_at)
+                VALUES (?, ?, ?)
+            """, (name, learning_style, datetime.now()))
             conn.commit()
+
             student_id = c.lastrowid
             conn.close()
             
-            session['student_id'] = student_id
-            session['student_name'] = name
-            session['learning_style'] = learning_style
-            return redirect(url_for('dashboard'))
-    
+            session["student_id"] = student_id
+            session["student_name"] = name
+            session["learning_style"] = learning_style
+            
+            return redirect(url_for("dashboard"))
+
     return render_template("register.html", enhanced_mode=ENHANCED_MODE)
+
 
 @app.route("/dashboard")
 def dashboard():
@@ -277,6 +296,65 @@ def learn(topic_id):
                          content=content,
                          knowledge_level=knowledge_level,
                          learning_style=learning_style)  # ← Pass learning_style!
+
+@app.route("/check_status")
+def check_status():
+    """Endpoint untuk cek status sesi (untuk dashboard)"""
+    student_id = get_student_id()
+    if not student_id:
+        return jsonify({"error": "not_logged_in"}), 401
+    
+    return jsonify({
+        "session_active": bool(session.get('current_topic_id')),
+        "current_question": session.get('questions_attempted', 0),
+        "remaining": 10 - session.get('questions_attempted', 0) if session.get('questions_attempted', 0) < 10 else 0,
+        "last_emotion": session.get('last_emotion', 'Belum terdeteksi')
+    })
+
+@app.route("/detect_emotion", methods=["POST"])
+def detect_emotion():
+    if "student_id" not in session:
+        return jsonify({"error": "not_logged_in"}), 401
+
+    # Jika model tidak di-load, return dummy data
+    if not EMOTION_MODEL_LOADED:
+        return jsonify({
+            "emotion": "Senang",
+            "confidence": 0.85
+        })
+    
+    data = request.json
+    image_base64 = data.get("image")
+
+    if not image_base64:
+        return jsonify({"error": "no_image"}), 400
+
+    try:
+        # Decode base64 → image
+        image_bytes = base64.b64decode(image_base64.split(",")[1])
+        img = Image.open(BytesIO(image_bytes)).convert("L")
+        img = img.resize((48, 48))
+
+        img_array = np.array(img) / 255.0
+        img_array = img_array.reshape(1, 48, 48, 1)
+
+        prediction = emotion_model.predict(img_array, verbose=0)
+        emotion_index = np.argmax(prediction)
+        emotion = EMOTIONS[emotion_index] if emotion_index < len(EMOTIONS) else "Biasa"
+
+        # SIMPAN KE SESSION
+        session["last_emotion"] = emotion
+
+        return jsonify({
+            "emotion": emotion,
+            "confidence": float(np.max(prediction))
+        })
+    except Exception as e:
+        print(f"Error in emotion detection: {e}")
+        return jsonify({
+            "emotion": "Error",
+            "confidence": 0.0
+        })
 
 @app.route("/practice/<int:topic_id>")
 def practice(topic_id):
