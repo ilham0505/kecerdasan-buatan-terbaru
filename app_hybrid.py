@@ -1,3 +1,6 @@
+import os
+PORT = int(os.environ.get("PORT", 8000))
+
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 import json
 from datetime import datetime
@@ -753,4 +756,4 @@ if __name__ == "__main__":
     print("  🌐 Starting server at http://localhost:5000")
     print("="*70 + "\n")
     
-    app.run(debug=True, port=5000)
+    app.run(host="0.0.0.0", port=PORT)
